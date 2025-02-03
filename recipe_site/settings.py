@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv  # Добавлено для работы с .env
+from dotenv import load_dotenv
 
 load_dotenv()
 

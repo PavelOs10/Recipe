@@ -26,8 +26,7 @@ def recipe_list(request):
 
     categories = Category.objects.all()
 
-    # Пагинация
-    paginator = Paginator(recipes, 6)  # 6 рецептов на страницу
+    paginator = Paginator(recipes, 6)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
