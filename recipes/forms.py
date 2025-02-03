@@ -1,12 +1,18 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Recipe, Comment
+from .models import Recipe, Comment, Category
 
 class RecipeForm(forms.ModelForm):
+    categories = forms.ModelMultipleChoiceField(
+        queryset=Category.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
     class Meta:
         model = Recipe
-        fields = ['title', 'description', 'steps', 'cooking_time', 'image']
+        fields = ['title', 'description', 'steps', 'cooking_time', 'image', 'categories']
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)

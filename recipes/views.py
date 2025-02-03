@@ -4,32 +4,42 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.db.models import Q
+from django.core.paginator import Paginator
 
-from .models import Recipe
+from .models import Recipe, Category, Comment
 from .forms import RecipeForm, CustomUserCreationForm, CommentForm
-
 
 def index(request):
     recipes = Recipe.objects.order_by('?')[:5]
     return render(request, 'recipes/index.html', {'recipes': recipes})
 
-
 def recipe_list(request):
-    """Отображает все рецепты + поиск по названию/описанию."""
     query = request.GET.get('q', '')
-    recipes = Recipe.objects.all()
+    category_id = request.GET.get('category', '')
+    recipes = Recipe.objects.all().select_related('author').prefetch_related('categories')
+
     if query:
         recipes = recipes.filter(Q(title__icontains=query) | Q(description__icontains=query))
 
+    if category_id:
+        recipes = recipes.filter(categories__id=category_id)
+
+    categories = Category.objects.all()
+
+    # Пагинация
+    paginator = Paginator(recipes, 6)  # 6 рецептов на страницу
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'recipes/recipe_list.html', {
-        'recipes': recipes,
+        'page_obj': page_obj,
         'query': query,
+        'categories': categories,
+        'selected_category': int(category_id) if category_id else None,
     })
 
-
 def recipe_detail(request, pk):
-    """Детальный просмотр рецепта + вывод/добавление комментариев."""
-    recipe = get_object_or_404(Recipe, pk=pk)
+    recipe = get_object_or_404(Recipe.objects.select_related('author').prefetch_related('categories', 'comments__author'), pk=pk)
     comments = recipe.comments.order_by('-created_at')
 
     if request.method == 'POST':
@@ -53,7 +63,6 @@ def recipe_detail(request, pk):
         'form': form
     })
 
-
 @login_required
 def add_recipe(request):
     if request.method == 'POST':
@@ -67,7 +76,6 @@ def add_recipe(request):
     else:
         form = RecipeForm()
     return render(request, 'recipes/recipe_form.html', {'form': form, 'title': 'Добавить рецепт'})
-
 
 @login_required
 def edit_recipe(request, pk):
@@ -85,7 +93,6 @@ def edit_recipe(request, pk):
         form = RecipeForm(instance=recipe)
     return render(request, 'recipes/recipe_form.html', {'form': form, 'title': 'Редактировать рецепт'})
 
-
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
@@ -97,7 +104,6 @@ def register_view(request):
         form = CustomUserCreationForm()
     return render(request, 'recipes/register.html', {'form': form})
 
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -108,7 +114,6 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'recipes/login.html', {'form': form})
-
 
 def logout_view(request):
     logout(request)
