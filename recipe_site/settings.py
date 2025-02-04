@@ -57,8 +57,8 @@ DATABASES = {
         'NAME': os.getenv('DB_NAME', 'recipe_db'),
         'USER': os.getenv('DB_USER', 'recipe_user'),
         'PASSWORD': os.getenv('DB_PASSWORD', 'secret'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
