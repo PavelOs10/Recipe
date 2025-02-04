@@ -10,8 +10,8 @@
 <p><strong>Автор:</strong> {{ recipe.author.username }}</p>
 <p><strong>Время приготовления:</strong> {{ recipe.cooking_time }} минут</p>
 
-{% if recipe.image %}
-  <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" class="img-fluid my-3">
+{% if recipe.image_base64 %}
+  <img src="data:image/jpeg;base64,{{ recipe.image_base64 }}" alt="{{ recipe.title }}" class="img-fluid my-3">
 {% else %}
   <img src="{% static 'recipes/no_image.jpg' %}" alt="Нет картинки" class="img-fluid my-3">
 {% endif %}

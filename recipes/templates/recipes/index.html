@@ -12,8 +12,8 @@
     {% for recipe in recipes %}
       <div class="col">
         <div class="card h-100">
-          {% if recipe.image %}
-            <img src="{{ recipe.image.url }}" class="card-img-top" alt="{{ recipe.title }}">
+          {% if recipe.image_base64 %}
+            <img src="data:image/jpeg;base64,{{ recipe.image_base64 }}" class="card-img-top" alt="{{ recipe.title }}">
           {% else %}
             <img src="{% static 'recipes/no_image.jpg' %}" class="card-img-top" alt="Нет картинки">
           {% endif %}
