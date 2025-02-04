@@ -4,16 +4,25 @@ from django.contrib.auth.models import User
 from .models import Recipe, Comment, Category
 
 class RecipeForm(forms.ModelForm):
-    categories = forms.ModelMultipleChoiceField(
-        queryset=Category.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=False
-    )
-
     class Meta:
         model = Recipe
-        fields = ['title', 'description', 'steps', 'cooking_time', 'image', 'categories']
+        fields = ['title', 'description', 'steps', 'cooking_time', 'categories']
 
+    image = forms.ImageField(required=False)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        image = self.cleaned_data.get('image')
+        
+        if image:
+            image_data = image.read()
+            instance.image_base64 = base64.b64encode(image_data).decode('utf-8')
+        
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance
+    
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
 
