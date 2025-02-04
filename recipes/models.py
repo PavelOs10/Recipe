@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Category(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название категории')
     description = models.TextField(verbose_name='Описание', blank=True)
@@ -14,15 +13,10 @@ class Recipe(models.Model):
     description = models.TextField(verbose_name='Описание')
     steps = models.TextField(verbose_name='Шаги приготовления')
     cooking_time = models.PositiveIntegerField(verbose_name='Время приготовления (мин.)')
-    # image = models.ImageField(upload_to='recipes/', null=True, blank=True, verbose_name='Изображение')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recipes')
     categories = models.ManyToManyField(Category, related_name='recipes', verbose_name='Категории')
-    image_base64 = models.TextField(
-        blank=True, 
-        null=True,
-        verbose_name='Изображение (Base64)'
-    )
-    
+    image_base64 = models.TextField(blank=True, null=True, verbose_name='Изображение (Base64)')
+
     def __str__(self):
         return self.title
 

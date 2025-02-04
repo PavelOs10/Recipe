@@ -10,15 +10,12 @@ class RecipeForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
-    image = forms.ImageField(
-        required=False,
-        label='Изображение рецепта'
-    )
+    image = forms.ImageField(required=False, label='Изображение рецепта')
 
     class Meta:
         model = Recipe
         fields = ['title', 'description', 'steps', 'cooking_time', 'categories']
-        
+
     def save(self, commit=True):
         instance = super().save(commit=False)
         uploaded_image = self.cleaned_data.get('image')
